@@ -13,7 +13,7 @@
     @foreach($candidates as $candidate)
             <tr>
                 <td>{{ $candidate->candidate_id }}</td>
-                <td>{{ $candidate->last_name }}, {{ $candidate->first_name }}@unless($candidate->no_middle_name) {{ $middle_name }}@endunless</td>
+                <td>{{ $candidate->user->name }}</td>
                 <td>... Reports ...</td>
                 <td>... Actions ...</td>
             </tr>

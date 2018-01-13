@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\CheckrCandidate as CheckrCandidate;
-use Input;
 use GuzzleHttp\Client;
+use Carbon\Carbon;
 
 class CheckrCandidatesController extends Controller
 {
@@ -40,8 +40,6 @@ class CheckrCandidatesController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-        dump($data);
-
         $guzzleClient = new Client();
         $checkrResponse = $guzzleClient->request('POST', 'https://api.checkr.com/v1/candidates', [
             'form_params' => [
@@ -55,15 +53,26 @@ class CheckrCandidatesController extends Controller
             ],
             'auth' => [env('CHECKR_API_KEY'), '']
         ]);
+        $statusCode = $checkrResponse->getStatusCode();
 
-        print_r($checkrResponse->getStatusCode());
-        echo "<br><br>";
-        dump($checkrResponse->getHeader('content-type'));
+        if ($statusCode == 200 || $statusCode == 201) {
+            $checkrData = json_decode($checkrResponse->getBody());
 
-        $stuff = $checkrResponse->getBody();
-        echo $stuff;
+            $candidateData = [];
+            $candidateData['user_id'] = $request->user()->id;
+            $candidateData['candidate_id'] = $checkrData->id;
+            $candidateData['checkr_created_at'] = $checkrData->created_at ? Carbon::parse($checkrData->created_at) : null;
+            $candidateData['object'] = $checkrData->object;
 
-
+            $checkrCandidate = new CheckrCandidate();
+            $checkrCandidate->fill($candidateData);
+            $checkrCandidate->save();
+            return redirect()->route('candidates.index');
+        } else {
+            return redirect()->route('candidates.create')
+                ->with('message', 'Unable to submit Background Check at this time, please try again a bit later')
+                ->withInput();
+        }
     }
 
     /**

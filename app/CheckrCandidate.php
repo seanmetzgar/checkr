@@ -36,6 +36,18 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CheckrCandidate extends Model
 {
+    protected $fillable = [
+        'user_id',
+        'candidate_id',
+        'checkr_created_at',
+        'object'
+    ];
+
+    protected $dates = [
+        'checkr_created_at',
+        'created_at',
+        'updated_at'
+    ];
     /**
      * Create relationship with User [One-to-Many (inverse)]
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

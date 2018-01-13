@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\CheckrEvent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class CheckrEventController extends Controller
 {
@@ -60,7 +61,7 @@ class CheckrEventController extends Controller
                     $eventData['object'] = $request->input('object');
                     $eventData['type'] = $request->input('type');
                     $eventData['data'] = $request->input('data');
-                    $eventData['checkr_created_at'] = $request->input('created_at');
+                    $eventData['checkr_created_at'] = $request->input('created_at') ? Carbon::parse($request->input('created_at')) : null;
                     $eventData['checkr_object_id'] = $request->input('data.object.id');
                     $eventData['checkr_object_type'] = $objectType;
 
